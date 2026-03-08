@@ -117,6 +117,8 @@
     .btn-primary{display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:white;border:none;font-family:'DM Sans',sans-serif;font-size:0.95rem;font-weight:600;padding:12px 28px;border-radius:10px;cursor:pointer;transition:opacity 0.15s,transform 0.15s;text-decoration:none}
     .btn-primary:hover{opacity:0.88;transform:translateY(-1px)}
     footer{border-top:1px solid var(--border);padding:24px;text-align:center;font-size:0.8rem;color:var(--text-muted)}
+    footer a{color:var(--accent);text-decoration:none}
+    footer a:hover{text-decoration:underline}
     @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
     @media(max-width:600px){.hero h1{font-size:1.7rem}.nav-links{display:none}.cta-card{padding:28px 20px}}
   </style>
@@ -130,6 +132,7 @@
       <ul class="nav-links">
         <li><a href="#notion"  data-i18n="nav_notion"></a></li>
         <li><a href="#confirm" data-i18n="nav_confirm"></a></li>
+        <li><a href="privacy.html" data-i18n="nav_privacy"></a></li>
       </ul>
       <div class="lang-switcher">
         <button class="lang-btn" id="btnJa" onclick="setLang('ja')">JA</button>
@@ -305,7 +308,7 @@
 <script>
 const i18n = {
   ja: {
-    nav_notion:'Notion設定', nav_confirm:'確認',
+    nav_notion:'Notion設定', nav_confirm:'確認', nav_privacy:'プライバシー',
     hero_badge:'⚙️ セットアップガイド',
     hero_title:'Notio+を使いはじめる',
     hero_desc:'Notion Integration TokenとDatabase IDを設定するだけで、メモの自動同期が使えるようになります。所要時間は約5〜10分です。',
@@ -356,10 +359,10 @@ const i18n = {
     cta_check1:'Notion Integration Token を取得した',
     cta_check2:'Notion Database ID を取得した',
     cta_btn:'📝 Notio+を開いてメモをはじめる',
-    footer_text:'Notio+ セットアップガイド · APIキーはご自身の責任で管理してください · Notionの利用規約に従いご利用ください',
+    footer_text:'© 2025 Notio+ · <a href="privacy.html">プライバシーポリシー</a> · APIキーはご自身の責任で管理してください',
   },
   en: {
-    nav_notion:'Notion Setup', nav_confirm:'Confirm',
+    nav_notion:'Notion Setup', nav_confirm:'Confirm', nav_privacy:'Privacy',
     hero_badge:'⚙️ Setup Guide',
     hero_title:'Get started with Notio+',
     hero_desc:'Set up your Notion Integration Token and Database ID to enable automatic memo sync. Takes about 5–10 minutes.',
@@ -410,7 +413,7 @@ const i18n = {
     cta_check1:'Obtained Notion Integration Token',
     cta_check2:'Obtained Notion Database ID',
     cta_btn:'📝 Open Notio+ and start taking notes',
-    footer_text:'Notio+ Setup Guide · Keep your API keys secure · Use in accordance with Notion Terms of Service',
+    footer_text:'© 2025 Notio+ · <a href="privacy.html">Privacy Policy</a> · Keep your API keys secure',
   }
 };
 
