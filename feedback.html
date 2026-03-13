@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="ja" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notio+ フィードバック</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Lora:wght@500;600&display=swap" rel="stylesheet">
+  <style>
+    /* ── CSS Variables ─────────────────────────── */
+    :root {
+      --bg:       #F5F0E8;
+      --bg2:      #EDE7DA;
+      --surface:  #FDFAF5;
+      --border:   #DDD5C5;
+      --text:     #1C1917;
+      --muted:    #78716C;
+      --accent:   #D97757;
+      --accent2:  #C4622E;
+      --success:  #4CAF50;
+      --error:    #E53935;
+    }
+    [data-theme="dark"] {
+      --bg:      #1C1917;
+      --bg2:     #292524;
+      --surface: #28231F;
+      --border:  #44403C;
+      --text:    #F5F0E8;
+      --muted:   #A8A29E;
+      --accent:  #E8875F;
+      --accent2: #D97757;
+    }
+
+    /* ── Reset & Base ──────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* ── Noise texture ─────────────────────────── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      opacity: .035;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 200px;
+    }
+
+    /* ── Header ────────────────────────────────── */
+    header {
+      position: sticky; top: 0; z-index: 100;
+      background: color-mix(in srgb, var(--bg) 80%, transparent);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 24px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .logo {
+      display: flex; align-items: center; gap: 10px;
+      font-family: 'Lora', serif; font-size: 18px; font-weight: 600;
+      color: var(--text); text-decoration: none;
+    }
+    .logo-icon {
+      width: 30px; height: 30px; border-radius: 8px;
+      background: var(--accent); display: grid; place-items: center;
+      font-size: 16px; color: #fff;
+    }
+    .badge {
+      font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 500;
+      background: color-mix(in srgb, var(--accent) 15%, transparent);
+      color: var(--accent); padding: 2px 8px; border-radius: 99px;
+      border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+    }
+    .theme-btn {
+      background: none; border: 1px solid var(--border); border-radius: 8px;
+      padding: 6px 10px; cursor: pointer; font-size: 16px;
+      color: var(--muted); transition: all .2s;
+    }
+    .theme-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ── Main layout ───────────────────────────── */
+    main {
+      position: relative; z-index: 1;
+      max-width: 640px; margin: 0 auto;
+      padding: 48px 24px 80px;
+    }
+
+    /* ── Hero ──────────────────────────────────── */
+    .hero {
+      text-align: center; margin-bottom: 40px;
+      animation: fadeUp .5s ease both;
+    }
+    .hero h1 {
+      font-family: 'Lora', serif; font-size: 32px; font-weight: 600;
+      color: var(--text); line-height: 1.3; margin-bottom: 10px;
+    }
+    .hero p {
+      color: var(--muted); font-size: 15px; line-height: 1.6;
+    }
+    .hero-accent { color: var(--accent); }
+
+    /* ── Card ──────────────────────────────────── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+      animation: fadeUp .5s .1s ease both;
+    }
+
+    /* ── Form fields ───────────────────────────── */
+    .field { margin-bottom: 24px; }
+    .field label {
+      display: block; font-size: 13px; font-weight: 600;
+      color: var(--text); margin-bottom: 8px; letter-spacing: .02em;
+    }
+    .field label span { color: var(--accent); margin-left: 2px; }
+    .field-hint { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+    select, textarea {
+      width: 100%; background: var(--bg); color: var(--text);
+      border: 1.5px solid var(--border); border-radius: 10px;
+      font-family: 'DM Sans', sans-serif; font-size: 14px;
+      transition: border-color .2s, box-shadow .2s;
+      outline: none;
+    }
+    select {
+      padding: 11px 36px 11px 14px; appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2378716C' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 12px center;
+    }
+    textarea { padding: 12px 14px; resize: vertical; min-height: 120px; line-height: 1.6; }
+    select:focus, textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 15%, transparent);
+    }
+
+    /* ── Category icons ────────────────────────── */
+    .category-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;
+    }
+    .category-item {
+      display: none; /* hidden radio */
+    }
+    .category-label {
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      padding: 14px 10px; border-radius: 12px; cursor: pointer;
+      border: 1.5px solid var(--border); background: var(--bg);
+      transition: all .2s; text-align: center;
+    }
+    .category-label:hover { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 5%, var(--bg)); }
+    .category-item:checked + .category-label {
+      border-color: var(--accent);
+      background: color-mix(in srgb, var(--accent) 10%, var(--surface));
+      color: var(--accent);
+    }
+    .cat-icon { font-size: 22px; }
+    .cat-name { font-size: 12px; font-weight: 600; }
+    .cat-sub  { font-size: 11px; color: var(--muted); }
+
+    /* ── Screenshot upload ─────────────────────── */
+    .upload-zone {
+      border: 2px dashed var(--border); border-radius: 12px;
+      padding: 28px 20px; text-align: center; cursor: pointer;
+      transition: all .2s; position: relative;
+      background: var(--bg);
+    }
+    .upload-zone:hover, .upload-zone.drag { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 5%, var(--bg)); }
+    .upload-zone input[type="file"] { display: none; }
+    .upload-icon { font-size: 28px; margin-bottom: 8px; }
+    .upload-text { font-size: 13px; color: var(--muted); line-height: 1.5; }
+    .upload-text strong { color: var(--accent); cursor: pointer; }
+    .upload-limit { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+    /* ── Preview ───────────────────────────────── */
+    #preview-area { display: none; margin-top: 12px; position: relative; }
+    #preview-img {
+      width: 100%; max-height: 220px; object-fit: contain;
+      border-radius: 8px; border: 1px solid var(--border);
+    }
+    .remove-btn {
+      position: absolute; top: 6px; right: 6px;
+      background: color-mix(in srgb, #000 60%, transparent);
+      color: #fff; border: none; border-radius: 99px;
+      width: 24px; height: 24px; font-size: 12px; cursor: pointer;
+      display: grid; place-items: center;
+    }
+    .file-name { font-size: 12px; color: var(--muted); margin-top: 6px; text-align: center; }
+
+    /* ── Submit button ─────────────────────────── */
+    .submit-btn {
+      width: 100%; padding: 14px;
+      background: var(--accent); color: #fff;
+      border: none; border-radius: 12px; cursor: pointer;
+      font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      transition: all .2s; margin-top: 8px;
+    }
+    .submit-btn:hover:not(:disabled) { background: var(--accent2); transform: translateY(-1px); box-shadow: 0 6px 20px color-mix(in srgb, var(--accent) 30%, transparent); }
+    .submit-btn:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+
+    /* ── Status messages ───────────────────────── */
+    .status {
+      display: none; margin-top: 16px; padding: 14px 16px;
+      border-radius: 10px; font-size: 14px; font-weight: 500;
+      text-align: center; animation: fadeUp .3s ease;
+    }
+    .status.success { background: color-mix(in srgb, var(--success) 12%, var(--surface)); color: var(--success); border: 1px solid color-mix(in srgb, var(--success) 30%, transparent); }
+    .status.error   { background: color-mix(in srgb, var(--error)   12%, var(--surface)); color: var(--error);   border: 1px solid color-mix(in srgb, var(--error)   30%, transparent); }
+
+    /* ── Divider ───────────────────────────────── */
+    .divider { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+
+    /* ── Footer note ───────────────────────────── */
+    .footer-note {
+      text-align: center; font-size: 12px; color: var(--muted);
+      margin-top: 24px; line-height: 1.6;
+      animation: fadeUp .5s .2s ease both;
+    }
+
+    /* ── Animations ────────────────────────────── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .spin {
+      animation: spin .8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Responsive ────────────────────────────── */
+    @media (max-width: 480px) {
+      main { padding: 32px 16px 60px; }
+      .card { padding: 24px 18px; }
+      .hero h1 { font-size: 26px; }
+      .category-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <a class="logo" href="#">
+      <div class="logo-icon">📝</div>
+      Notio+
+      <span class="badge">Feedback</span>
+    </a>
+    <button class="theme-btn" id="theme-toggle" title="テーマ切り替え">🌙</button>
+  </header>
+
+  <!-- Main -->
+  <main>
+    <div class="hero">
+      <h1>ご意見をお聞かせください<span class="hero-accent"> 🙏</span></h1>
+      <p>バグ報告・機能要望・ご意見など、どんな内容でも歓迎です。<br>スクリーンショットを添えると対応がスムーズになります。</p>
+    </div>
+
+    <div class="card">
+      <form id="feedback-form">
+
+        <!-- Category -->
+        <div class="field">
+          <label>カテゴリを選んでください <span>*</span></label>
+          <div class="category-grid">
+            <input class="category-item" type="radio" name="category" id="cat-bug"     value="🐛 バグ報告">
+            <label class="category-label" for="cat-bug">
+              <span class="cat-icon">🐛</span>
+              <span class="cat-name">バグ報告</span>
+              <span class="cat-sub">動かない・おかしい</span>
+            </label>
+
+            <input class="category-item" type="radio" name="category" id="cat-idea"    value="💡 機能要望">
+            <label class="category-label" for="cat-idea">
+              <span class="cat-icon">💡</span>
+              <span class="cat-name">機能要望</span>
+              <span class="cat-sub">こんな機能がほしい</span>
+            </label>
+
+            <input class="category-item" type="radio" name="category" id="cat-opinion" value="💬 ご意見・感想">
+            <label class="category-label" for="cat-opinion">
+              <span class="cat-icon">💬</span>
+              <span class="cat-name">ご意見・感想</span>
+              <span class="cat-sub">使ってみての感想</span>
+            </label>
+
+            <input class="category-item" type="radio" name="category" id="cat-other"   value="📌 その他">
+            <label class="category-label" for="cat-other">
+              <span class="cat-icon">📌</span>
+              <span class="cat-name">その他</span>
+              <span class="cat-sub">上記以外のご連絡</span>
+            </label>
+          </div>
+          <div class="field-hint" id="cat-error" style="color:var(--error);display:none;">カテゴリを選択してください</div>
+        </div>
+
+        <hr class="divider">
+
+        <!-- Comment -->
+        <div class="field">
+          <label for="comment">コメント <span>*</span></label>
+          <textarea id="comment" name="comment" placeholder="バグの場合は再現手順を、要望の場合はユースケースをお書きいただけると助かります。" rows="5"></textarea>
+          <div class="field-hint">文字数制限なし。できるだけ具体的に書いていただけると対応が早くなります。</div>
+        </div>
+
+        <!-- Screenshot -->
+        <div class="field">
+          <label>スクリーンショット <span style="color:var(--muted);font-weight:400;">（任意）</span></label>
+          <div class="upload-zone" id="upload-zone">
+            <input type="file" id="screenshot" name="screenshot" accept="image/*">
+            <div class="upload-icon">🖼️</div>
+            <div class="upload-text">
+              ここにドラッグ＆ドロップ、または<br>
+              <strong id="upload-trigger">クリックして選択</strong>
+            </div>
+            <div class="upload-limit">PNG / JPG / WebP・最大 5MB</div>
+          </div>
+          <div id="preview-area">
+            <img id="preview-img" src="" alt="preview">
+            <button type="button" class="remove-btn" id="remove-btn">✕</button>
+            <div class="file-name" id="file-name"></div>
+          </div>
+        </div>
+
+        <hr class="divider">
+
+        <!-- Submit -->
+        <button type="submit" class="submit-btn" id="submit-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+          送信する
+        </button>
+
+        <div class="status" id="status-msg"></div>
+
+      </form>
+    </div>
+
+    <p class="footer-note">
+      送信内容は開発者（Notio+）のみ閲覧します。<br>
+      個人情報は含めないようお願いします。
+    </p>
+  </main>
+
+  <script>
+    // ── Replace this URL with your deployed Apps Script URL ──
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbwWDa0jwl25Ha0ah1n7uu0XXScrjpmISxmWsbp1oAKm3iCZ_aPwbk8Cp5v957sjtYPPrQ/exec';
+
+    // ── Theme toggle ─────────────────────────────────────────
+    const html = document.documentElement;
+    const themeBtn = document.getElementById('theme-toggle');
+    const saved = localStorage.getItem('notio-feedback-theme') || 'light';
+    html.dataset.theme = saved;
+    themeBtn.textContent = saved === 'dark' ? '☀️' : '🌙';
+    themeBtn.addEventListener('click', () => {
+      const next = html.dataset.theme === 'dark' ? 'light' : 'dark';
+      html.dataset.theme = next;
+      themeBtn.textContent = next === 'dark' ? '☀️' : '🌙';
+      localStorage.setItem('notio-feedback-theme', next);
+    });
+
+    // ── File upload ───────────────────────────────────────────
+    const zone       = document.getElementById('upload-zone');
+    const fileInput  = document.getElementById('screenshot');
+    const previewArea= document.getElementById('preview-area');
+    const previewImg = document.getElementById('preview-img');
+    const removeBtn  = document.getElementById('remove-btn');
+    const fileLabel  = document.getElementById('file-name');
+    let screenshotB64 = null;
+    let screenshotName = '';
+    let screenshotType = '';
+
+    document.getElementById('upload-trigger').addEventListener('click', () => fileInput.click());
+    zone.addEventListener('click', e => { if(e.target.id !== 'upload-trigger') fileInput.click(); });
+
+    zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag'); });
+    zone.addEventListener('dragleave', () => zone.classList.remove('drag'));
+    zone.addEventListener('drop', e => {
+      e.preventDefault(); zone.classList.remove('drag');
+      if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+    });
+    fileInput.addEventListener('change', () => { if (fileInput.files[0]) handleFile(fileInput.files[0]); });
+
+    function handleFile(file) {
+      if (!file.type.startsWith('image/')) return alert('画像ファイルを選択してください');
+      if (file.size > 5 * 1024 * 1024) return alert('5MB以下の画像を選択してください');
+      screenshotName = file.name;
+      screenshotType = file.type;
+      const reader = new FileReader();
+      reader.onload = e => {
+        screenshotB64 = e.target.result; // full data URL
+        previewImg.src = screenshotB64;
+        fileLabel.textContent = file.name + ' (' + (file.size / 1024).toFixed(0) + ' KB)';
+        previewArea.style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+    }
+
+    removeBtn.addEventListener('click', () => {
+      screenshotB64 = null; screenshotName = ''; screenshotType = '';
+      fileInput.value = '';
+      previewArea.style.display = 'none';
+      previewImg.src = '';
+    });
+
+    // ── Form submit ───────────────────────────────────────────
+    const form      = document.getElementById('feedback-form');
+    const statusMsg = document.getElementById('status-msg');
+    const submitBtn = document.getElementById('submit-btn');
+
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      const category = document.querySelector('input[name="category"]:checked')?.value;
+      const comment  = document.getElementById('comment').value.trim();
+      const catError = document.getElementById('cat-error');
+
+      if (!category) { catError.style.display = 'block'; return; }
+      catError.style.display = 'none';
+      if (!comment)  { document.getElementById('comment').focus(); return; }
+
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = `<svg class="spin" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/></svg> 送信中…`;
+
+      try {
+        const payload = { category, comment, screenshot: screenshotB64 || null, screenshotName };
+        const res = await fetch(GAS_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        // no-corsのためレスポンスは常にopaque → 成功扱いとする
+        showStatus('success', '✅ 送信しました！フィードバックありがとうございます。');
+        form.reset(); removeBtn.click();
+      } catch (err) {
+        showStatus('error', '❌ 送信に失敗しました。しばらく待ってから再試行してください。');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg> 送信する`;
+      }
+    });
+
+    function showStatus(type, msg) {
+      statusMsg.className = 'status ' + type;
+      statusMsg.textContent = msg;
+      statusMsg.style.display = 'block';
+      statusMsg.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  </script>
+</body>
+</html>
