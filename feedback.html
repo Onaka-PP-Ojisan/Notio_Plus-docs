@@ -258,7 +258,7 @@
   <!-- Main -->
   <main>
     <div class="hero">
-      <h1>ご意見をお聞かせください<span class="hero-accent"> 🙏</span></h1>
+      <h1>ご意見をお聞かせください</h1>
       <p>バグ報告・機能要望・ご意見など、どんな内容でも歓迎です。<br>スクリーンショットを添えると対応がスムーズになります。</p>
     </div>
 
@@ -269,30 +269,26 @@
         <div class="field">
           <label>カテゴリを選んでください <span>*</span></label>
           <div class="category-grid">
-            <input class="category-item" type="radio" name="category" id="cat-bug"     value="🐛 バグ報告">
+            <input class="category-item" type="radio" name="category" id="cat-bug"     value="バグ報告">
             <label class="category-label" for="cat-bug">
-              <span class="cat-icon">🐛</span>
               <span class="cat-name">バグ報告</span>
               <span class="cat-sub">動かない・おかしい</span>
             </label>
 
-            <input class="category-item" type="radio" name="category" id="cat-idea"    value="💡 機能要望">
+            <input class="category-item" type="radio" name="category" id="cat-idea"    value="機能要望">
             <label class="category-label" for="cat-idea">
-              <span class="cat-icon">💡</span>
               <span class="cat-name">機能要望</span>
               <span class="cat-sub">こんな機能がほしい</span>
             </label>
 
-            <input class="category-item" type="radio" name="category" id="cat-opinion" value="💬 ご意見・感想">
+            <input class="category-item" type="radio" name="category" id="cat-opinion" value="ご意見・感想">
             <label class="category-label" for="cat-opinion">
-              <span class="cat-icon">💬</span>
               <span class="cat-name">ご意見・感想</span>
               <span class="cat-sub">使ってみての感想</span>
             </label>
 
-            <input class="category-item" type="radio" name="category" id="cat-other"   value="📌 その他">
+            <input class="category-item" type="radio" name="category" id="cat-other"   value="その他">
             <label class="category-label" for="cat-other">
-              <span class="cat-icon">📌</span>
               <span class="cat-name">その他</span>
               <span class="cat-sub">上記以外のご連絡</span>
             </label>
@@ -314,7 +310,7 @@
           <label>スクリーンショット <span style="color:var(--muted);font-weight:400;">（任意）</span></label>
           <div class="upload-zone" id="upload-zone">
             <input type="file" id="screenshot" name="screenshot" accept="image/*">
-            <div class="upload-icon">🖼️</div>
+            <div class="upload-icon"></div>
             <div class="upload-text">
               ここにドラッグ＆ドロップ、または<br>
               <strong id="upload-trigger">クリックして選択</strong>
@@ -431,7 +427,7 @@
         const res = await fetch(GAS_URL, {
           method: 'POST',
           mode: 'no-cors',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'text/plain' },
           body: JSON.stringify(payload)
         });
         // no-corsのためレスポンスは常にopaque → 成功扱いとする
